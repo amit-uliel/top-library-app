@@ -16,9 +16,22 @@
             <th>isRead</th>
         </thead>
         <tbody>
-            
+
         </tbody>
     </table>
+    <button>New Book</button>
+    <dialog>
+        <form method="post">
+            <input name="title" type="text" placeholder="What's the title?">
+            <input name="author" type="text" placeholder="Who is the author?">
+            <input name="pages" type="text" placeholder="How many pages?">
+            <input name="isRead" type="checkbox" id="isReadCheckbox">
+            <label for="isReadCheckbox">Did you read it?</label>
+
+            <button type="submit" class="dialog__submit-book">Add Book</button>
+            <button type="button" class="dialog__close-dialog">Cancel</button>
+        </form>
+    </dialog>
 
     <script src="script.js"></script>
 </body>

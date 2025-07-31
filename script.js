@@ -1,4 +1,4 @@
-const books = [];
+const library = [];
 
 function Book(title, author, pages, isRead) {
     this.id = crypto.randomUUID();
@@ -15,25 +15,21 @@ Book.prototype.info = function() {
     return str;
 }
 
+// function the add book to library array
 function addBookToLibrary(title, author, pages, isRead) {
     const book = new Book(title, author, pages, isRead);
-    books.push(book);
+    library.push(book);
+    return book;
 }
 
+// function to create <td> elements
 function createTd(text) {
     const td = document.createElement('td');
     td.textContent = text;
     return td;
 }
 
-const book1 = addBookToLibrary("The Hunger Games", "Suzanne Collins", 374, true);
-const book2 = addBookToLibrary("The Witcher", "Andrzej Sapkowski", 295, false);
-const book3 = addBookToLibrary("Harry Potter and the Sorcerer's Stone", "J.K. Rowling", 309, true);
-const book4 = addBookToLibrary("The Hobbit", "J.R.R. Tolkien", 310, false);
-
-const tbody = document.querySelector('tbody');
-
-for (const book of books) {
+function addBookRow(book) {
     const tr = document.createElement('tr');
 
     const values = [
@@ -45,6 +41,44 @@ for (const book of books) {
     ];
 
     values.forEach(value => tr.appendChild(createTd(value)));
-    
-    tbody.appendChild(tr);
+
+    return tr;
 }
+
+function displayBooks() {
+    library.forEach(book => tbody.appendChild(addBookRow(book)));
+}
+
+function displayNewBook(book) {
+    tbody.appendChild(addBookRow(book));
+}
+
+// get elements
+const tbody = document.querySelector('tbody');
+const button = document.querySelector('button');
+const closeButton = document.querySelector('.dialog__close-dialog');
+const dialog = document.querySelector('dialog');
+const form = document.querySelector('form');
+
+// create books
+addBookToLibrary("The Hunger Games", "Suzanne Collins", 374, true);
+addBookToLibrary("The Witcher", "Andrzej Sapkowski", 295, false);
+addBookToLibrary("Harry Potter and the Sorcerer's Stone", "J.K. Rowling", 309, true);
+addBookToLibrary("The Hobbit", "J.R.R. Tolkien", 310, false);
+
+displayBooks();
+
+// add event listener to button to show / close dialog
+button.addEventListener('click', () => dialog.showModal());
+closeButton.addEventListener('click', () => dialog.close());
+
+// add event listener to form submission
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const book = addBookToLibrary(formData.get('title'), formData.get('author'), formData.get('pages'), formData.get('isRead') === 'on');
+
+    displayNewBook(book);
+    dialog.close();
+});
