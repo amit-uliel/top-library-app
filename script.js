@@ -22,40 +22,33 @@ function addBookToLibrary(title, author, pages, isRead) {
     return book;
 }
 
-// function to create <td> elements
-function createTd(text, ) {
-    const td = document.createElement('td');
-    td.textContent = text;
-    return td;
+function text(text) {
+    return document.createTextNode(text);
 }
 
-function createButtonTd(button) {
+function createTd(node) {
     const td = document.createElement('td');
-    td.appendChild(button);
+    td.appendChild(node);
     return td;
 }
 
 function clearTableBody() {
-    tbody.innerHTML = '';
+    while (tbody.firstChild) {
+        tbody.removeChild(tbody.firstChild);
+    }
 }
 
 function filterLibrary(library, bookId) {
     return library.filter(book => book.id !== bookId);
 }
 
-function createDeleteButton(bookId) {
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Delete';
-    deleteButton.setAttribute('data-id', bookId);
+function createButton(label, onClick) {
+    const button = document.createElement('button');
+    button.textContent = label;
 
-    deleteButton.addEventListener('click', () => {
-        const bookId = deleteButton.dataset.id;
-        library = filterLibrary(library, bookId);
-        clearTableBody();
-        displayBooks(library);
-    });
+    button.addEventListener('click', onClick);
 
-    return deleteButton;
+    return button;
 }
 
 function createBookTr(book) {
@@ -69,8 +62,12 @@ function createBookTr(book) {
         book.isRead ? '✅' : '❌',
     ];
 
-    values.forEach(value => tr.appendChild(createTd(value)));
-    tr.appendChild(createButtonTd(createDeleteButton(book.id)));
+    values.forEach(value => tr.appendChild(createTd(text(value))));
+    tr.appendChild(createTd(createButton('Delete', () => {
+        library = filterLibrary(library, book.id);
+        clearTableBody();
+        displayBooks(library);
+    })));
 
     return tr;
 }
