@@ -1,4 +1,4 @@
-const library = [];
+let library = [];
 
 function Book(title, author, pages, isRead) {
     this.id = crypto.randomUUID();
@@ -23,13 +23,42 @@ function addBookToLibrary(title, author, pages, isRead) {
 }
 
 // function to create <td> elements
-function createTd(text) {
+function createTd(text, ) {
     const td = document.createElement('td');
     td.textContent = text;
     return td;
 }
 
-function addBookRow(book) {
+function createButtonTd(button) {
+    const td = document.createElement('td');
+    td.appendChild(button);
+    return td;
+}
+
+function clearTableBody() {
+    tbody.innerHTML = '';
+}
+
+function filterLibrary(library, bookId) {
+    return library.filter(book => book.id !== bookId);
+}
+
+function createDeleteButton(bookId) {
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.setAttribute('data-id', bookId);
+
+    deleteButton.addEventListener('click', () => {
+        const bookId = deleteButton.dataset.id;
+        library = filterLibrary(library, bookId);
+        clearTableBody();
+        displayBooks(library);
+    });
+
+    return deleteButton;
+}
+
+function createBookTr(book) {
     const tr = document.createElement('tr');
 
     const values = [
@@ -41,16 +70,17 @@ function addBookRow(book) {
     ];
 
     values.forEach(value => tr.appendChild(createTd(value)));
+    tr.appendChild(createButtonTd(createDeleteButton(book.id)));
 
     return tr;
 }
 
-function displayBooks() {
-    library.forEach(book => tbody.appendChild(addBookRow(book)));
+function displayBooks(library) {
+    library.forEach(book => tbody.appendChild(createBookTr(book)));
 }
 
 function displayNewBook(book) {
-    tbody.appendChild(addBookRow(book));
+    tbody.appendChild(createBookTr(book));
 }
 
 // get elements
@@ -66,7 +96,7 @@ addBookToLibrary("The Witcher", "Andrzej Sapkowski", 295, false);
 addBookToLibrary("Harry Potter and the Sorcerer's Stone", "J.K. Rowling", 309, true);
 addBookToLibrary("The Hobbit", "J.R.R. Tolkien", 310, false);
 
-displayBooks();
+displayBooks(library);
 
 // add event listener to button to show / close dialog
 button.addEventListener('click', () => dialog.showModal());
