@@ -8,11 +8,8 @@ function Book(title, author, pages, isRead) {
     this.isRead = isRead;
 }
 
-Book.prototype.info = function() {
-    let str = '';
-    str += `${this.title} by ${this.author}, ${this.pages} pages, `;
-    str += this.isRead ? 'read' : 'not read yet';
-    return str;
+Book.prototype.toggleIsReadStatus = function() {
+    this.isRead = !this.isRead;
 }
 
 // function the add book to library array
@@ -51,6 +48,11 @@ function createButton(label, onClick) {
     return button;
 }
 
+function updateRow(oldTr, book) {
+    const newTr = createBookTr(book);
+    oldTr.replaceWith(newTr);
+}
+
 function createBookTr(book) {
     const tr = document.createElement('tr');
 
@@ -63,10 +65,18 @@ function createBookTr(book) {
     ];
 
     values.forEach(value => tr.appendChild(createTd(text(value))));
+
+    // add delete button
     tr.appendChild(createTd(createButton('Delete', () => {
         library = filterLibrary(library, book.id);
         clearTableBody();
         displayBooks(library);
+    })));
+
+    // add change isRead button
+    tr.appendChild(createTd(createButton(book.isRead ? "Change, I didn't read it" : 'I read it', () => {
+        book.toggleIsReadStatus();
+        updateRow(tr, book);
     })));
 
     return tr;
