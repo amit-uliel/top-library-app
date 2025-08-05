@@ -35,7 +35,7 @@ function clearTableBody() {
     }
 }
 
-function filterLibrary(library, bookId) {
+function deleteBookFromLibrary(library, bookId) {
     return library.filter(book => book.id !== bookId);
 }
 
@@ -48,9 +48,31 @@ function createButton(label, onClick) {
     return button;
 }
 
+function handleDeleteClick(book) {
+    library = deleteBookFromLibrary(library, book.id);
+    clearTableBody();
+    displayBooks(library);
+}
+
 function updateRow(oldTr, book) {
     const newTr = createBookTr(book);
     oldTr.replaceWith(newTr);
+}
+
+function getButtonConfigs(tr, book) {
+    return [
+        {
+            label: book.isRead ? "Change, I didn't read it" : 'I read it',
+            onClick: () => {
+                book.toggleIsReadStatus();
+                updateRow(tr, book);
+            }
+        },
+        {
+            label: 'Delete',
+            onClick: () => handleDeleteClick(book)
+        }
+    ];
 }
 
 function createBookTr(book) {
@@ -66,18 +88,8 @@ function createBookTr(book) {
 
     values.forEach(value => tr.appendChild(createTd(text(value))));
 
-    // add delete button
-    tr.appendChild(createTd(createButton('Delete', () => {
-        library = filterLibrary(library, book.id);
-        clearTableBody();
-        displayBooks(library);
-    })));
-
-    // add change isRead button
-    tr.appendChild(createTd(createButton(book.isRead ? "Change, I didn't read it" : 'I read it', () => {
-        book.toggleIsReadStatus();
-        updateRow(tr, book);
-    })));
+    const buttonConfigs = getButtonConfigs(tr, book);
+    buttonConfigs.forEach(({ label, onClick }) => tr.appendChild(createTd(createButton(label, onClick))));
 
     return tr;
 }
