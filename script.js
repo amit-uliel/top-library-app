@@ -59,19 +59,16 @@ function updateRow(oldTr, book) {
     oldTr.replaceWith(newTr);
 }
 
-function getButtonConfigs(tr, book) {
+function getButtonConfigs(book, callbacks) {
     return [
         {
-            label: book.isRead ? "Change, I didn't read it" : 'I read it',
-            onClick: () => {
-                book.toggleIsReadStatus();
-                updateRow(tr, book);
-            }
+            label: book.isRead ? "Mark as unread" : 'Mark as read',
+            onClick: callbacks.onToggleRead
         },
         {
             label: 'Delete',
-            onClick: () => handleDeleteClick(book)
-        }
+            onClick: callbacks.onDelete
+        },
     ];
 }
 
@@ -88,7 +85,14 @@ function createBookTr(book) {
 
     values.forEach(value => tr.appendChild(createTd(text(value))));
 
-    const buttonConfigs = getButtonConfigs(tr, book);
+    const buttonConfigs = getButtonConfigs(book, {
+        onToggleRead: () => {
+            book.toggleIsReadStatus();
+            updateRow(tr, book);
+        },
+        onDelete: () => handleDeleteClick(book),
+    });
+    
     buttonConfigs.forEach(({ label, onClick }) => tr.appendChild(createTd(createButton(label, onClick))));
 
     return tr;
